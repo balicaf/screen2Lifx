@@ -2,7 +2,7 @@
 
 Reproduce your screen mean color onto your LIFX bulb.
 Demo: [THIS!](https://youtu.be/WHCtUvEJXq0)
-*original code is from lifxscreen is https://github.com/frakman1/lifxscreen2*)
+*original code from lifxscreen is https://github.com/frakman1/lifxscreen2*)
 
 Tested on a MacOs 10.13.4. and 10.11.6 Python version 2.7.14
 
