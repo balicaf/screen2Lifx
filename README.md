@@ -15,10 +15,10 @@ download the wheel (.whl): 5.0 for 10.11.6 and 5.1 for 10.13.4.
 
 * Lazylights - The actual LIFX driver.  https://github.com/mpapi/lazylights/tree/2.0
 
-on terminal
-pip install git+https://github.com/mpapi/lazylights@2.0
-pip install colour
-pip install (drag&drop downloaded wheel into your terminal to obtain the path)
+on terminal:<br />
+pip install git+https://github.com/mpapi/lazylights@2.0<br />
+pip install colour<br />
+pip install (drag&drop downloaded wheel into your terminal to obtain the path)<br />
 
 
 
