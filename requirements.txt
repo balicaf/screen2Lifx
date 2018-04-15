@@ -1,0 +1,10 @@
+colour==0.1.2
+
+lazylights==2.0.0rc1
+
+
+For MacOs High Sierra 
+Pillow==5.1.0
+
+For MacOs El Capitan 
+Pillow==5.1.0
