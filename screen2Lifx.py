@@ -5,8 +5,10 @@
 #my goal is to use that with Itunes visualizer
 #toDo: change c.saturation and c.luminance to 1
 #toDo: use music bpm to change lights accordingly (predict lag/having a lag time multiple of the beats?)
+#an idea is to grab iTunes notification (music title) and check on Mixxx the BPM
 #toDo: change the decimate+mean to another system (edge detection filter+mediane of pixels grabbed?)
 #toDo: In case of more than 85 ms transition(DURATION), add to the 2D pixels accumulator a time one (i.e. do an average in time too)
+#toDo: Use GPU for image processing
 
 
 import lazylights
@@ -85,8 +87,8 @@ while True:
 	#image.show()
 
 
-        #This is the screenshot processing
-	##begin1=  (time.clock())
+	#This is the screenshot processing
+	###begin1=  (time.clock())
 	for y in range(0, height, DECIMATE):  #loop over the height
 		for x in range(0, width, DECIMATE):  #loop over the width (half the width in this case)
 			#print "\n coordinates   x:%d y:%d \n" % (x,y)
