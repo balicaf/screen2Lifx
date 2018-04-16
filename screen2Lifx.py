@@ -24,14 +24,44 @@ import binascii
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////
 # GLOBAL DEFINES
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////
+#from typing import Any, Union
+
 KELVIN           = 0    # 2000 to 8000, where 2000 is the warmest and 8000 is the coolest
-DECIMATE         = 10   # skip every DECIMATE number of pixels to speed up calculation
-DURATION         = 2000  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
-BLACK_THRESHOLD  = 0.08 # Black Screen Detection Threshold
-BLACK_BRIGHTNESS = 0.03 # Black Screen case's brightness setting
-BLACK_KELVIN     = 5000 # Black Screen case's Kelvin setting
+DECIMATE         = 9   # skip every DECIMATE number of pixels to speed up calculation
+DURATION         = 100  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
+#BLACK_THRESHOLD  = 0.08 # Black Screen Detection Threshold
+#BLACK_BRIGHTNESS = 0.03 # Black Screen case's brightness setting
+#BLACK_KELVIN     = 5000 # Black Screen case's Kelvin setting
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+#Information and basic source from
+#http://www.macosxautomation.com/applescript/features/scriptingbridge.html
+
+from Foundation import *
+from ScriptingBridge import *
+import time
+
+
+iTunes = SBApplication.applicationWithBundleIdentifier_("com.apple.iTunes")
+
+#print iTunes.currentTrack().name()
+#print iTunes.currentTrack().artist()
+#print iTunes.currentTrack().album()
+
+outputString = iTunes.currentTrack().name()# + "[" + iTunes.currentTrack().album()
+
+print outputString
+bpmTrack=0#int
+bpmTrack=iTunes.currentTrack().bpm()
+
+print bpmTrack
+if bpmTrack != 0:
+	msBPM=60000.0/(bpmTrack*2)  # type: Union[float, int]
+	DURATION=msBPM
+print DURATION
+
+#toDo check music lenght then do a counter (while music)do DURATION and then check the other music bpm
 #------------------------------------------------------------------------------------------------------------
 # I use this to manually create a bulb using IP and MAC address.
 def createBulb(ip, macString, port = 56700):
@@ -72,10 +102,10 @@ blue  = 0
 
 # TODO: clean this up and make it dynamically detect size and crop the black bits out automagically
 #values form mbpr 13", 21:9 movie
-left   = 0      # The x-offset of where your crop box starts
-top    = 220    # The y-offset of where your crop box starts
-width  = 2560   # The width  of crop box
-height = 1000#1440    # The height of crop box
+left   = 1024      # The x-offset of where your crop box starts
+top    = 576    # The y-offset of where your crop box starts
+width  = 512   # The width  of crop box
+height = 288#1440    # The height of crop box
 box    = (left, top, left+width, top+height)
 # This is the Main loop
 while True:
@@ -107,6 +137,14 @@ while True:
 	green = ((green / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
 	blue = ((blue / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
 
+
+	#be sure to be in range 0..1
+	if red>1:
+		red=1
+	if green>1:
+		green=1
+	if blue>1:
+		blue=1
 	# generate a composite colour from these averages
 	c = Color(rgb=(red, green, blue))
 	##middle1=(time.clock())
@@ -120,12 +158,12 @@ while True:
 	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	# PROGRAM LIFX BULBS 
 	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (c.red < BLACK_THRESHOLD)  and (c.green < BLACK_THRESHOLD) and (c.blue < BLACK_THRESHOLD):
+#	if (c.red < BLACK_THRESHOLD)  and (c.green < BLACK_THRESHOLD) and (c.blue < BLACK_THRESHOLD):
 		#print "black1 detected"
-		lazylights.set_state(bulbs,0,0,BLACK_BRIGHTNESS,BLACK_KELVIN,(DURATION),False)
-	else:
+#		lazylights.set_state(bulbs,0,0,BLACK_BRIGHTNESS,BLACK_KELVIN,(DURATION),False)
+#	else:
             
-		lazylights.set_state(bulbs,c.hue*360,c.saturation,c.luminance,KELVIN,(DURATION),False)
+	lazylights.set_state(bulbs,c.hue*360,c.saturation,1,KELVIN,(DURATION),False)
 		##print (c)
 		#lazylights.set_state(bulbs,c.hue*360,(2+c.saturation)/3,1,KELVIN,(DURATION),False)#c.luminance
                 
