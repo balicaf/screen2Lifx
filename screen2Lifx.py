@@ -4,11 +4,14 @@
 
 #my goal is to use that with Itunes visualizer
 #toDo: change c.saturation and c.luminance to 1
-#toDo: use music bpm to change lights accordingly (predict lag/having a lag time multiple of the beats?)
-#an idea is to grab iTunes notification (music title) and check on Mixxx the BPM
+
 #toDo: change the decimate+mean to another system (edge detection filter+mediane of pixels grabbed?)
 #toDo: In case of more than 85 ms transition(DURATION), add to the 2D pixels accumulator a time one (i.e. do an average in time too)
 #toDo: Use GPU for image processing
+
+#toDo: use music bpm to change lights accordingly (predict lag/having a lag time multiple of the beats?)
+#an idea is to grab iTunes notification (music title) and check on Mixxx the BPM
+#toDo add on readme "download mixxx, settings, library, "export: write modified metadata from the library into file tag""
 
 
 import lazylights
@@ -28,7 +31,7 @@ import binascii
 
 KELVIN           = 0    # 2000 to 8000, where 2000 is the warmest and 8000 is the coolest
 DECIMATE         = 9   # skip every DECIMATE number of pixels to speed up calculation
-DURATION         = 100  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
+DURATION         = 200  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
 #BLACK_THRESHOLD  = 0.08 # Black Screen Detection Threshold
 #BLACK_BRIGHTNESS = 0.03 # Black Screen case's brightness setting
 #BLACK_KELVIN     = 5000 # Black Screen case's Kelvin setting
@@ -57,8 +60,8 @@ bpmTrack=iTunes.currentTrack().bpm()
 
 print bpmTrack
 if bpmTrack != 0:
-	msBPM=60000.0/(bpmTrack*2)  # type: Union[float, int]
-	DURATION=msBPM
+	msBPM=60000.0/(bpmTrack)  # type: Union[float, int]
+	DURATION=0.5*msBPM
 print DURATION
 
 #toDo check music lenght then do a counter (while music)do DURATION and then check the other music bpm
@@ -108,9 +111,20 @@ width  = 512   # The width  of crop box
 height = 288#1440    # The height of crop box
 box    = (left, top, left+width, top+height)
 # This is the Main loop
+
+begin1=(time.time());
+
 while True:
+	while (time.time() - begin1) < DURATION/1000.0:
+		time.sleep(0.01)
+		#print time.time() - begin1
+		#print"DURATION/1000.0"
+		#print DURATION/1000.0
 
 	# take a screenairshot
+	begin2=  (time.time())
+	#print(begin2-begin1)
+	begin1=begin2
 	image = ImageGrab.grab(bbox=box)
 	c = Color(rgb=(1, 0, 0))
 	lazylights.set_state(bulbs,c.hue*360,(c.saturation),c.luminance,KELVIN,(DURATION),False)
@@ -118,7 +132,7 @@ while True:
 
 
 	#This is the screenshot processing
-	###begin1=  (time.clock())
+
 	for y in range(0, height, DECIMATE):  #loop over the height
 		for x in range(0, width, DECIMATE):  #loop over the width (half the width in this case)
 			#print "\n coordinates   x:%d y:%d \n" % (x,y)
@@ -130,7 +144,7 @@ while True:
 			#print red + " " +  green + " " + blue
 			#print "\n totals   red:%s green:%s blue:%s\n" % (red,green,blue)
 			#print color
-	
+
 
 	# calculate the averages
 	red = (( red / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
@@ -156,28 +170,28 @@ while True:
 	#print "average1  (hex) "+  (c.hex)
 
 	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-	# PROGRAM LIFX BULBS 
+	# PROGRAM LIFX BULBS
 	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
 #	if (c.red < BLACK_THRESHOLD)  and (c.green < BLACK_THRESHOLD) and (c.blue < BLACK_THRESHOLD):
 		#print "black1 detected"
 #		lazylights.set_state(bulbs,0,0,BLACK_BRIGHTNESS,BLACK_KELVIN,(DURATION),False)
 #	else:
-            
-	lazylights.set_state(bulbs,c.hue*360,c.saturation,1,KELVIN,(DURATION),False)
+#set_light_state_raw
+	lazylights.set_state(bulbs,c.hue*360,c.saturation,1,KELVIN,0,False)
 		##print (c)
 		#lazylights.set_state(bulbs,c.hue*360,(2+c.saturation)/3,1,KELVIN,(DURATION),False)#c.luminance
-                
+
 	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
 
 
-	##end1=time.clock()
-	##print(end1-begin1)
 
-	# Clear colour accumulators 	
+
+
+	# Clear colour accumulators
 	red   = 0
 	green = 0
 	blue  = 0
+
 
 
 
