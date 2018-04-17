@@ -12,7 +12,7 @@
 #toDo: use music bpm to change lights accordingly (predict lag/having a lag time multiple of the beats?)
 #an idea is to grab iTunes notification (music title) and check on Mixxx the BPM
 #toDo add on readme "download mixxx, settings, library, "export: write modified metadata from the library into file tag""
-
+#if the curently played music on iTunes has bpm metadata, then the lifx will switch color accordingly
 
 import lazylights
 import time
@@ -23,6 +23,8 @@ from colour import Color
 import sys
 import math
 import binascii
+import threading
+import random
 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////
 # GLOBAL DEFINES
@@ -61,7 +63,7 @@ bpmTrack=iTunes.currentTrack().bpm()
 print bpmTrack
 if bpmTrack != 0:
 	msBPM=60000.0/(bpmTrack)  # type: Union[float, int]
-	DURATION=0.5*msBPM
+	DURATION=msBPM
 print DURATION
 
 #toDo check music lenght then do a counter (while music)do DURATION and then check the other music bpm
@@ -112,19 +114,43 @@ height = 288#1440    # The height of crop box
 box    = (left, top, left+width, top+height)
 # This is the Main loop
 
+
+
+
+
+
+
+def changeBPM():
+  threading.Timer(5.0, changeBPM).start()
+  bpmTrack = iTunes.currentTrack().bpm()
+  if bpmTrack != 0:
+      msBPM = 2*60000.0 / (bpmTrack)  # type: Union[float, int]
+      DURATION =  msBPM
+
+changeBPM()
 begin1=(time.time());
+bpm1=DURATION
+beginBPM=time.time()
+countBeat=0
 
 while True:
-	while (time.time() - begin1) < DURATION/1000.0:
-		time.sleep(0.01)
+	# if bpm1==DURATION:
+	# 	#this is the same music
+	# 	# %reminder //int division
+	# else:
+	# 	#this is a different music
+	# 	beginBPM = time.time()
+
+	if (time.time() - begin1) < DURATION/1000.0:
+		time.sleep(DURATION/1000.0 - (time.time() - begin1) -0.665/1000)#0.665 there is a lag of less than a milisecond
+		#lag is reduce to 0.1ms/beat, thus 50ms over a music
 		#print time.time() - begin1
 		#print"DURATION/1000.0"
 		#print DURATION/1000.0
 
 	# take a screenairshot
-	begin2=  (time.time())
-	#print(begin2-begin1)
-	begin1=begin2
+	#print(time.time()-begin1)
+	begin1=(time.time())
 	image = ImageGrab.grab(bbox=box)
 	c = Color(rgb=(1, 0, 0))
 	lazylights.set_state(bulbs,c.hue*360,(c.saturation),c.luminance,KELVIN,(DURATION),False)
@@ -160,7 +186,8 @@ while True:
 	if blue>1:
 		blue=1
 	# generate a composite colour from these averages
-	c = Color(rgb=(red, green, blue))
+	#c = Color(rgb=(red, green, blue))
+	c = Color(rgb=(random.uniform(0, 1),random.uniform(0, 1),random.uniform(0, 1)))
 	##middle1=(time.clock())
 	##print(middle1-begin1)
 	##print (c)
