@@ -60,11 +60,11 @@ print outputString
 bpmTrack=0#int
 bpmTrack=iTunes.currentTrack().bpm()
 
-print bpmTrack
-if bpmTrack != 0:
-	msBPM=60000.0/(bpmTrack)  # type: Union[float, int]
-	DURATION=msBPM
-print DURATION
+# print bpmTrack
+# if bpmTrack != 0:
+# 	msBPM=60000.0/(bpmTrack)  # type: Union[float, int]
+# 	DURATION=msBPM
+# print DURATION
 
 #toDo check music lenght then do a counter (while music)do DURATION and then check the other music bpm
 #------------------------------------------------------------------------------------------------------------
@@ -121,28 +121,48 @@ box    = (left, top, left+width, top+height)
 
 
 def changeBPM():
-  threading.Timer(5.0, changeBPM).start()
-  bpmTrack = iTunes.currentTrack().bpm()
-  if bpmTrack != 0:
-      msBPM = 2*60000.0 / (bpmTrack)  # type: Union[float, int]
-      DURATION =  msBPM
+	global beatLenght
+	global DURATION
+	threading.Timer(10.0, changeBPM).start()
+	bpmTrack = iTunes.currentTrack().bpm()
+	if bpmTrack != 0:
+		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
+		beatLenght =  msBPM
+		print "beatLenght"
+		print beatLenght
+	else:
+		beatLenght=DURATION
 
 changeBPM()
-begin1=(time.time());
-bpm1=DURATION
+begin1=time.time()
+#bpm1=beatLenght
+bpm1=beatLenght+1
 beginBPM=time.time()
-countBeat=0
+countBeat=1
 
 while True:
-	# if bpm1==DURATION:
-	# 	#this is the same music
-	# 	# %reminder //int division
-	# else:
-	# 	#this is a different music
-	# 	beginBPM = time.time()
 
-	if (time.time() - begin1) < DURATION/1000.0:
-		time.sleep(DURATION/1000.0 - (time.time() - begin1) -0.665/1000)#0.665 there is a lag of less than a milisecond
+	if bpm1!=beatLenght:
+	 	#this is a different music
+		beginBPM = time.time()
+		countBeat=0
+		bpm1 = beatLenght
+		print "music changed"
+	else:
+	 	#this is the same music
+		#print countBeat
+		#print 1000*(time.time() - beginBPM)
+		# need to do modulo
+		#print beatLenght
+		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000)
+
+		#print (a)
+		time.sleep( a  )
+		countBeat += 1
+	 	# %reminder //int division
+
+	#if (time.time() - begin1) < DURATION/1000.0:
+	#	time.sleep(DURATION/1000.0 - (time.time() - begin1) -0.665/1000)#0.665 there is a lag of less than a milisecond
 		#lag is reduce to 0.1ms/beat, thus 50ms over a music
 		#print time.time() - begin1
 		#print"DURATION/1000.0"
