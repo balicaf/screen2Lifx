@@ -14,6 +14,8 @@
 #toDo add on readme "download mixxx, settings, library, "export: write modified metadata from the library into file tag""
 #if the curently played music on iTunes has bpm metadata, then the lifx will switch color accordingly
 
+#todo add a more robust beat detection (i.e. call a shazam-like music recognition, then sync lights)
+
 import lazylights
 import time
 from PIL import ImageGrab
@@ -128,10 +130,12 @@ def changeBPM():
 	if bpmTrack != 0:
 		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
 		beatLenght =  msBPM
-		print "beatLenght"
+		print "bpmTrack"
 		print beatLenght
 	else:
 		beatLenght=DURATION
+		print "bpm = 0"
+		print beatLenght
 
 changeBPM()
 begin1=time.time()
@@ -154,9 +158,9 @@ while True:
 		#print 1000*(time.time() - beginBPM)
 		# need to do modulo
 		#print beatLenght
-		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000)
+		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000.0)
 
-		#print (a)
+		a=max(0,a)
 		time.sleep( a  )
 		countBeat += 1
 	 	# %reminder //int division
