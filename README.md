@@ -1,8 +1,10 @@
 # screen2Lifx
 
-Reproduce your screen mean color onto your LIFX bulb.
+Originally reproduce your screen mean color onto your LIFX bulb.
 Demo: [THIS!](https://youtu.be/WHCtUvEJXq0)
 *original code from lifxscreen is https://github.com/frakman1/lifxscreen2*)
+
+With this version, LIFX is synced with iTune's BPMs (obtained thanks to Mixxx app)
 
 Tested on a MacOs 10.13.4. and 10.11.6 Python version 2.7.14
 
