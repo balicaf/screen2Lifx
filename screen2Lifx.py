@@ -35,7 +35,7 @@ import random
 
 KELVIN           = 0    # 2000 to 8000, where 2000 is the warmest and 8000 is the coolest
 DECIMATE         = 9   # skip every DECIMATE number of pixels to speed up calculation
-DURATION         = 200  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
+DURATION         = 3000  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
 #BLACK_THRESHOLD  = 0.08 # Black Screen Detection Threshold
 #BLACK_BRIGHTNESS = 0.03 # Black Screen case's brightness setting
 #BLACK_KELVIN     = 5000 # Black Screen case's Kelvin setting
@@ -127,9 +127,18 @@ def changeBPM():
 	global DURATION
 	threading.Timer(10.0, changeBPM).start()
 	bpmTrack = iTunes.currentTrack().bpm()
-	if bpmTrack != 0:
+	notPlaying=(iTunes.playerState() ==1800426352)
+	# 1800426352#not playing
+	# 1800426320#playing
+	if notPlaying:
+		beatLenght = DURATION*4
+		print("not playing")
+
+
+
+	elif bpmTrack != 0:
 		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
-		beatLenght =  msBPM
+		beatLenght = 2*msBPM
 		print "bpmTrack"
 		print beatLenght
 	else:
@@ -174,43 +183,50 @@ while True:
 
 	# take a screenairshot
 	#print(time.time()-begin1)
-	begin1=(time.time())
-	image = ImageGrab.grab(bbox=box)
-	c = Color(rgb=(1, 0, 0))
-	lazylights.set_state(bulbs,c.hue*360,(c.saturation),c.luminance,KELVIN,(DURATION),False)
-	#image.show()
 
 
-	#This is the screenshot processing
-
-	for y in range(0, height, DECIMATE):  #loop over the height
-		for x in range(0, width, DECIMATE):  #loop over the width (half the width in this case)
-			#print "\n coordinates   x:%d y:%d \n" % (x,y)
-			color = image.getpixel((x, y))  #grab a pixel
-			# calculate sum of each component (RGB)
-			red = red + color[0]
-			green = green + color[1]
-			blue = blue + color[2]
-			#print red + " " +  green + " " + blue
-			#print "\n totals   red:%s green:%s blue:%s\n" % (red,green,blue)
-			#print color
-
-
-	# calculate the averages
-	red = (( red / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
-	green = ((green / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
-	blue = ((blue / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
-
-
-	#be sure to be in range 0..1
-	if red>1:
-		red=1
-	if green>1:
-		green=1
-	if blue>1:
-		blue=1
-	# generate a composite colour from these averages
-	#c = Color(rgb=(red, green, blue))
+	##############################@
+	# begin1=(time.time())
+	# image = ImageGrab.grab(bbox=box)
+	# c = Color(rgb=(1, 0, 0))
+	# lazylights.set_state(bulbs,c.hue*360,(c.saturation),c.luminance,KELVIN,(DURATION),False)
+	# #image.show()
+	#
+	#
+	# #This is the screenshot processing
+	#
+	# for y in range(0, height, DECIMATE):  #loop over the height
+	# 	for x in range(0, width, DECIMATE):  #loop over the width (half the width in this case)
+	# 		#print "\n coordinates   x:%d y:%d \n" % (x,y)
+	# 		color = image.getpixel((x, y))  #grab a pixel
+	# 		# calculate sum of each component (RGB)
+	# 		red = red + color[0]
+	# 		green = green + color[1]
+	# 		blue = blue + color[2]
+	# 		#print red + " " +  green + " " + blue
+	# 		#print "\n totals   red:%s green:%s blue:%s\n" % (red,green,blue)
+	# 		#print color
+	#
+	#
+	# # calculate the averages
+	# red = (( red / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
+	# green = ((green / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
+	# blue = ((blue / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
+	#
+	#
+	# #be sure to be in range 0..1
+	# if red>1:
+	# 	red=1
+	# if green>1:
+	# 	green=1
+	# if blue>1:
+	# 	blue=1
+	# # generate a composite colour from these averages
+	# #c = Color(rgb=(red, green, blue))
+	#
+	#
+	#
+	####################################
 	c = Color(rgb=(random.uniform(0, 1),random.uniform(0, 1),random.uniform(0, 1)))
 	##middle1=(time.clock())
 	##print(middle1-begin1)
