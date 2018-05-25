@@ -138,7 +138,7 @@ def changeBPM():
 
 	elif bpmTrack != 0:
 		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
-		beatLenght = 2*msBPM
+		beatLenght = 2*msBPM #avoid stroboscopic effect
 		print "bpmTrack"
 		print beatLenght
 	else:
