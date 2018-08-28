@@ -36,6 +36,7 @@ import random
 KELVIN           = 0    # 2000 to 8000, where 2000 is the warmest and 8000 is the coolest
 DECIMATE         = 9   # skip every DECIMATE number of pixels to speed up calculation
 DURATION         = 3000  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
+SLOW_DOWN        = 1 # integer to decrease stroboscopic effect
 #BLACK_THRESHOLD  = 0.08 # Black Screen Detection Threshold
 #BLACK_BRIGHTNESS = 0.03 # Black Screen case's brightness setting
 #BLACK_KELVIN     = 5000 # Black Screen case's Kelvin setting
@@ -77,9 +78,16 @@ def createBulb(ip, macString, port = 56700):
 #print("hi")
 
 #Scan for bulbs
-bulbs = lazylights.find_bulbs(expected_bulbs=1, timeout=5)
-print (bulbs)
+bulbs = lazylights.find_bulbs(expected_bulbs=2, timeout=5)
+bulbs_by_name = {state.label.strip(" \x00"): state.bulb
+                 for state in lazylights.get_state(bulbs)}
+print (bulbs_by_name)
 print (len(bulbs))
+#set([
+# Bulb(gateway_mac='LIFXV2', mac='\xd0s\xd51\xeaN', addr=('192.168.0.12', 56700)),
+# Bulb(gateway_mac='LIFXV2', mac='\xd0s\xd5$mE'   , addr=('192.168.0.14', 56700))
+# ])
+
 
 if (len(bulbs)==0):
     print ("No LIFX bulbs found. Make sure you're on the same WiFi network and try again")
@@ -87,7 +95,8 @@ if (len(bulbs)==0):
 
 
 #here is one bulb. I get this value from my router info page.
-#myBulb1 = createBulb('10.10.10.2','D0:73:D5:31:EA:4E')  
+#myBulb1 = createBulb('10.10.10.2','D0:73:D5:31:EA:4E')
+##d073d5246d45
 #lazylights requires a 'set' of bulbs as input 
 #bulbs1=[myBulb1]
 
@@ -138,7 +147,7 @@ def changeBPM():
 
 	elif bpmTrack != 0:
 		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
-		beatLenght = 2*msBPM #avoid stroboscopic effect
+		beatLenght = msBPM*SLOW_DOWN #avoid stroboscopic effect
 		print "bpmTrack"
 		print beatLenght
 	else:
@@ -152,6 +161,7 @@ begin1=time.time()
 bpm1=beatLenght+1
 beginBPM=time.time()
 countBeat=1
+cReg = Color(rgb=(1, 1, 0))
 
 while True:
 
@@ -227,7 +237,7 @@ while True:
 	#
 	#
 	####################################
-	c = Color(rgb=(random.uniform(0, 1),random.uniform(0, 1),random.uniform(0, 1)))
+	c = Color(rgb=(random.uniform(0.1, 1),random.uniform(0.1, 1),random.uniform(0, 0.5)))
 	##middle1=(time.clock())
 	##print(middle1-begin1)
 	##print (c)
@@ -244,7 +254,14 @@ while True:
 #		lazylights.set_state(bulbs,0,0,BLACK_BRIGHTNESS,BLACK_KELVIN,(DURATION),False)
 #	else:
 #set_light_state_raw
-	lazylights.set_state(bulbs,c.hue*360,c.saturation,1,KELVIN,0,False)
+
+	if countBeat%2==0:
+		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cReg.hue * 360, cReg.saturation, 0.3, KELVIN, 0, False)
+
+	else:
+		cReg = c
+		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']],c.hue*360,c.saturation,0.3,KELVIN,0,False)
+		#bulbs_by_name 'LIFX 31ea4e' 'LIFX 246D45'
 		##print (c)
 		#lazylights.set_state(bulbs,c.hue*360,(2+c.saturation)/3,1,KELVIN,(DURATION),False)#c.luminance
 
