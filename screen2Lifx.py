@@ -37,15 +37,9 @@ KELVIN           = 0    # 2000 to 8000, where 2000 is the warmest and 8000 is th
 DECIMATE         = 9   # skip every DECIMATE number of pixels to speed up calculation
 DURATION         = 3000  # The time over which to change the colour of the lights in ms. Use 100 for faster transitions
 SLOW_DOWN        = 1 # integer to decrease stroboscopic effect
-#BLACK_THRESHOLD  = 0.08 # Black Screen Detection Threshold
-#BLACK_BRIGHTNESS = 0.03 # Black Screen case's brightness setting
-#BLACK_KELVIN     = 5000 # Black Screen case's Kelvin setting
-#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 #Information and basic source from
 #http://www.macosxautomation.com/applescript/features/scriptingbridge.html
-
 from Foundation import *
 from ScriptingBridge import *
 import time
@@ -63,93 +57,56 @@ print outputString
 bpmTrack=0#int
 bpmTrack=iTunes.currentTrack().bpm()
 
-# print bpmTrack
-# if bpmTrack != 0:
-# 	msBPM=60000.0/(bpmTrack)  # type: Union[float, int]
-# 	DURATION=msBPM
-# print DURATION
-
 #toDo check music lenght then do a counter (while music)do DURATION and then check the other music bpm
 #------------------------------------------------------------------------------------------------------------
 # I use this to manually create a bulb using IP and MAC address.
 def createBulb(ip, macString, port = 56700):
     return lazylights.Bulb(b'LIFXV2', binascii.unhexlify(macString.replace(':', '')), (ip,port))
 #------------------------------------------------------------------------------------------------------------
-#print("hi")
 
-#Scan for bulbs
+#Scan for 2 bulbs
 bulbs = lazylights.find_bulbs(expected_bulbs=2, timeout=5)
+#now bulbs can be called by their names
 bulbs_by_name = {state.label.strip(" \x00"): state.bulb
                  for state in lazylights.get_state(bulbs)}
-print (bulbs_by_name)
-print (len(bulbs))
 #set([
 # Bulb(gateway_mac='LIFXV2', mac='\xd0s\xd51\xeaN', addr=('192.168.0.12', 56700)),
 # Bulb(gateway_mac='LIFXV2', mac='\xd0s\xd5$mE'   , addr=('192.168.0.14', 56700))
 # ])
 
-
 if (len(bulbs)==0):
     print ("No LIFX bulbs found. Make sure you're on the same WiFi network and try again")
     sys.exit(1)
 
-
-#here is one bulb. I get this value from my router info page.
-#myBulb1 = createBulb('10.10.10.2','D0:73:D5:31:EA:4E')
-##d073d5246d45
-#lazylights requires a 'set' of bulbs as input 
-#bulbs1=[myBulb1]
-
 #turn on
 lazylights.set_power(bulbs, True)
-time.sleep(1)
-
-#turn off
-#lazylights.set_power(bulbs, False)
-
+#do nothing during a tenth of a second
+time.sleep(0.1)
 
 #init counters/accumulators
 red   = 0
 green = 0
 blue  = 0
 
-# Crop a chunk of the screen out
-# This is hacky and is currently screen and movie-size specific.
-
-# TODO: clean this up and make it dynamically detect size and crop the black bits out automagically
-#values form mbpr 13", 21:9 movie
-left   = 1024      # The x-offset of where your crop box starts
-top    = 576    # The y-offset of where your crop box starts
-width  = 512   # The width  of crop box
-height = 288#1440    # The height of crop box
-box    = (left, top, left+width, top+height)
-# This is the Main loop
-
-
-
-
-
-
-
+#this is a thread to aquire BPMs from Itunes(given that you already calculated it on MIXXX)
 def changeBPM():
 	global beatLenght
 	global DURATION
 	threading.Timer(10.0, changeBPM).start()
 	bpmTrack = iTunes.currentTrack().bpm()
-	notPlaying=(iTunes.playerState() ==1800426352)
+	notPlaying=(iTunes.playerState() == 1800426352)
 	# 1800426352#not playing
 	# 1800426320#playing
 	if notPlaying:
-		beatLenght = DURATION*4
+		beatLenght = DURATION*SLOW_DOWN
 		print("not playing")
-
-
-
 	elif bpmTrack != 0:
 		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
 		beatLenght = msBPM*SLOW_DOWN #avoid stroboscopic effect
 		print "bpmTrack"
 		print beatLenght
+
+	#if it is playing but no BPMs
 	else:
 		beatLenght=DURATION
 		print "bpm = 0"
