@@ -97,9 +97,13 @@ def changeBPM():
 	notPlaying=(iTunes.playerState() == 1800426352)
 	# 1800426352#not playing
 	# 1800426320#playing
+
+	#if Itunes is not playing music
 	if notPlaying:
 		beatLenght = DURATION*SLOW_DOWN
 		print("not playing")
+
+	#if it's playing and there is an associated BPM
 	elif bpmTrack != 0:
 		msBPM = 60000.0 / (bpmTrack)  # type: Union[float, int]
 		beatLenght = msBPM*SLOW_DOWN #avoid stroboscopic effect
@@ -115,7 +119,7 @@ def changeBPM():
 changeBPM()
 begin1=time.time()
 #bpm1=beatLenght
-bpm1=beatLenght+1
+bpm1=beatLenght+1 #to force it to a state bpm1 not equal to beatLenght
 beginBPM=time.time()
 countBeat=1
 cReg = Color(rgb=(1, 1, 0))
@@ -130,14 +134,9 @@ while True:
 		print "music changed"
 	else:
 	 	#this is the same music
-		#print countBeat
-		#print 1000*(time.time() - beginBPM)
-		# need to do modulo
-		#print beatLenght
 		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000.0)
-
 		a=max(0,a)
-		time.sleep( a  )
+		time.sleep( a  )#should not sleep if 0
 		countBeat += 1
 	 	# %reminder //int division
 
