@@ -135,8 +135,11 @@ while True:
 		countBeat=0
 		bpm1 = beatLenght
 		print "music changed"
-	elif notPlaying:
+	elif (notPlaying==1) or (bpmTrack == 0):
 		cHue = (cHue * 360 + 20.0) % 360
+		time.sleep(50/1000) #20 wifi commands per seconds, can be increased if no checking
+		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cHue, 1, 1, KELVIN, 0025, False)
+		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], cHue, 1, 1, KELVIN, 0025, False)
 	else:
 	 	#this is the same music
 		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000.0)
@@ -144,20 +147,15 @@ while True:
 		time.sleep( a  )#should not sleep if 0
 		countBeat += 1
 
-	c = Color(rgb=(random.uniform(0.1, 1),random.uniform(0.1, 1),random.uniform(0, 0.5)))
+		c = Color(rgb=(random.uniform(0.1, 1),random.uniform(0.1, 1),random.uniform(0, 0.5)))
 
 
-	if notPlaying:
-		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cHue , 1, 1, KELVIN, 0025, False)
-		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], cHue , 1, 1, KELVIN, 0025, False)
-	elif countBeat%2==0:
-		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cReg.hue * 360, cReg.saturation, 0.3, KELVIN, 0, False)
+		if countBeat%2==0:
+			lazylights.set_state([bulbs_by_name['LIFX 246D45']], cReg.hue * 360, cReg.saturation, 0.3, KELVIN, 0, False)
 
-	else:
-		cReg = c
-		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']],c.hue*360,c.saturation,0.3,KELVIN,0,False)
-		#bulbs_by_name 'LIFX 31ea4e' 'LIFX 246D45'
-		##print (c)
+		else:
+			cReg = c
+			lazylights.set_state([bulbs_by_name['LIFX 31ea4e']],c.hue*360,c.saturation,0.3,KELVIN,0,False)
 		#lazylights.set_state(bulbs,c.hue*360,(2+c.saturation)/3,1,KELVIN,(DURATION),False)#c.luminance
 
 	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
