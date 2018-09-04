@@ -57,6 +57,7 @@ print outputString
 bpmTrack=0#int
 bpmTrack=iTunes.currentTrack().bpm()
 
+
 #toDo check music lenght then do a counter (while music)do DURATION and then check the other music bpm
 #------------------------------------------------------------------------------------------------------------
 # I use this to manually create a bulb using IP and MAC address.
@@ -87,14 +88,16 @@ time.sleep(0.1)
 red   = 0
 green = 0
 blue  = 0
+cHue  = 180
 
 #this is a thread to aquire BPMs from Itunes(given that you already calculated it on MIXXX)
 def changeBPM():
 	global beatLenght
 	global DURATION
+	global notPlaying
 	threading.Timer(10.0, changeBPM).start()
 	bpmTrack = iTunes.currentTrack().bpm()
-	notPlaying=(iTunes.playerState() == 1800426352)
+	notPlaying = (iTunes.playerState() == 1800426352)
 	# 1800426352#not playing
 	# 1800426320#playing
 
@@ -132,86 +135,22 @@ while True:
 		countBeat=0
 		bpm1 = beatLenght
 		print "music changed"
+	elif notPlaying:
+		cHue = (cHue * 360 + 20.0) % 360
 	else:
 	 	#this is the same music
 		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000.0)
 		a=max(0,a)
 		time.sleep( a  )#should not sleep if 0
 		countBeat += 1
-	 	# %reminder //int division
 
-	#if (time.time() - begin1) < DURATION/1000.0:
-	#	time.sleep(DURATION/1000.0 - (time.time() - begin1) -0.665/1000)#0.665 there is a lag of less than a milisecond
-		#lag is reduce to 0.1ms/beat, thus 50ms over a music
-		#print time.time() - begin1
-		#print"DURATION/1000.0"
-		#print DURATION/1000.0
-
-	# take a screenairshot
-	#print(time.time()-begin1)
-
-
-	##############################@
-	# begin1=(time.time())
-	# image = ImageGrab.grab(bbox=box)
-	# c = Color(rgb=(1, 0, 0))
-	# lazylights.set_state(bulbs,c.hue*360,(c.saturation),c.luminance,KELVIN,(DURATION),False)
-	# #image.show()
-	#
-	#
-	# #This is the screenshot processing
-	#
-	# for y in range(0, height, DECIMATE):  #loop over the height
-	# 	for x in range(0, width, DECIMATE):  #loop over the width (half the width in this case)
-	# 		#print "\n coordinates   x:%d y:%d \n" % (x,y)
-	# 		color = image.getpixel((x, y))  #grab a pixel
-	# 		# calculate sum of each component (RGB)
-	# 		red = red + color[0]
-	# 		green = green + color[1]
-	# 		blue = blue + color[2]
-	# 		#print red + " " +  green + " " + blue
-	# 		#print "\n totals   red:%s green:%s blue:%s\n" % (red,green,blue)
-	# 		#print color
-	#
-	#
-	# # calculate the averages
-	# red = (( red / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
-	# green = ((green / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
-	# blue = ((blue / ( (height/DECIMATE) * (width/DECIMATE) ) ) )/255.0
-	#
-	#
-	# #be sure to be in range 0..1
-	# if red>1:
-	# 	red=1
-	# if green>1:
-	# 	green=1
-	# if blue>1:
-	# 	blue=1
-	# # generate a composite colour from these averages
-	# #c = Color(rgb=(red, green, blue))
-	#
-	#
-	#
-	####################################
 	c = Color(rgb=(random.uniform(0.1, 1),random.uniform(0.1, 1),random.uniform(0, 0.5)))
-	##middle1=(time.clock())
-	##print(middle1-begin1)
-	##print (c)
 
-	#print "\naverage1  red:%s green:%s blue:%s" % (red,green,blue)
-	#print "average1   hue:%f saturation:%f luminance:%f" % (c.hue,c.saturation,c.luminance)
-	#print "average1  (hex) "+  (c.hex)
 
-	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-	# PROGRAM LIFX BULBS
-	#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-#	if (c.red < BLACK_THRESHOLD)  and (c.green < BLACK_THRESHOLD) and (c.blue < BLACK_THRESHOLD):
-		#print "black1 detected"
-#		lazylights.set_state(bulbs,0,0,BLACK_BRIGHTNESS,BLACK_KELVIN,(DURATION),False)
-#	else:
-#set_light_state_raw
-
-	if countBeat%2==0:
+	if notPlaying:
+		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cHue , 1, 1, KELVIN, 0025, False)
+		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], cHue , 1, 1, KELVIN, 0025, False)
+	elif countBeat%2==0:
 		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cReg.hue * 360, cReg.saturation, 0.3, KELVIN, 0, False)
 
 	else:
