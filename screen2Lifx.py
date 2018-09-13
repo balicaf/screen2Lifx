@@ -88,7 +88,7 @@ time.sleep(0.1)
 red   = 0
 green = 0
 blue  = 0
-cHue  = 180
+
 
 #this is a thread to aquire BPMs from Itunes(given that you already calculated it on MIXXX)
 def changeBPM():
@@ -121,25 +121,35 @@ def changeBPM():
 
 changeBPM()
 begin1=time.time()
-#bpm1=beatLenght
-bpm1=beatLenght+1 #to force it to a state bpm1 not equal to beatLenght
+#beatLenghtReg=beatLenght
+beatLenghtReg=beatLenght+1 #to force it to a state beatLenghtReg not equal to beatLenght
 beginBPM=time.time()
 countBeat=1
-cReg = Color(rgb=(1, 1, 0))
+cReg = Color(rgb=(1, 0, 0))
+global cHue
+cHue=cReg.hue
+print(cHue)
 
 while True:
+	# the music changed
+	if beatLenghtReg!=beatLenght:
+		global cHue
 
-	if bpm1!=beatLenght:
-	 	#this is a different music
 		beginBPM = time.time()
 		countBeat=0
-		bpm1 = beatLenght
+		beatLenghtReg = beatLenght
 		print "music changed"
+
+	#no music is playing (e.g. pause or just only watching youtube music)
 	elif (notPlaying==1) or (bpmTrack == 0):
-		cHue = (cHue * 360 + 20.0) % 360
-		time.sleep(50/1000) #20 wifi commands per seconds, can be increased if no checking
-		lazylights.set_state([bulbs_by_name['LIFX 246D45']], cHue, 1, 1, KELVIN, 0025, False)
-		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], cHue, 1, 1, KELVIN, 0025, False)
+
+		cHue +=0.01
+		time.sleep(0.2) #20 wifi commands per seconds, can be increased if no checking
+		lazylights.set_state([bulbs_by_name['LIFX 246D45']], (cHue+0.5)*360, 1, 1, KELVIN, 0200, False)
+		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], cHue*360, 1, 1, KELVIN, 0200, False)
+		print(cHue)
+
+	#while music is playing
 	else:
 	 	#this is the same music
 		a=(beatLenght / 1000)-(time.time() - beginBPM)%(beatLenght/1000.0)
@@ -147,12 +157,12 @@ while True:
 		time.sleep( a  )#should not sleep if 0
 		countBeat += 1
 
-		c = Color(rgb=(random.uniform(0.1, 1),random.uniform(0.1, 1),random.uniform(0, 0.5)))
+		c = Color(rgb=(random.uniform(0,1),random.uniform(0,1),random.uniform(0,1)))
 
-
+		#on even numbers, first lifx is light on
 		if countBeat%2==0:
 			lazylights.set_state([bulbs_by_name['LIFX 246D45']], cReg.hue * 360, cReg.saturation, 0.3, KELVIN, 0, False)
-
+		#on odd numbers it is the other one
 		else:
 			cReg = c
 			lazylights.set_state([bulbs_by_name['LIFX 31ea4e']],c.hue*360,c.saturation,0.3,KELVIN,0,False)
