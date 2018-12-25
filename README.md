@@ -5,7 +5,7 @@ Demo: [THIS!](https://youtu.be/WHCtUvEJXq0)
 *original code from lifxscreen is https://github.com/frakman1/lifxscreen2*)
 
 With this version, LIFX is synced with iTune's BPMs (obtained thanks to Mixxx app)
-
+Use the branch firstTodo to use it with two lifx bulbs!!!!
 Tested on a MacOs 10.13.4. and 10.11.6 Python version 2.7.14
 
 ##Prerequisites:
