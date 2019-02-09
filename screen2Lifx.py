@@ -69,6 +69,7 @@ def createBulb(ip, macString, port=56700):
 
 # Scan for 2 bulbs
 bulbs = lazylights.find_bulbs(expected_bulbs=2, timeout=5)
+print (bulbs)
 # now bulbs can be called by their names
 bulbs_by_name = {state.label.strip(" \x00"): state.bulb
 				 for state in lazylights.get_state(bulbs)}
@@ -152,9 +153,11 @@ while True:
 
 		cHue += 0.01
 		time.sleep(0.2)  # 20 wifi commands per seconds, can be increased if no checking
-		lazylights.set_state([bulbs_by_name['LIFX 246D45']], (cHue + 0.5) * 360, 1, 1, KELVIN, 0200, False)
-		lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], cHue * 360, 1, 1, KELVIN, 0200, False)
+		lazylights.set_state(bulbs, (cHue + 0.5) * 360, 1, 1, KELVIN, 0200, False)
+		#LIFX 246D45
+		lazylights.set_state(bulbs, cHue * 360, 1, 1, KELVIN, 0200, False)
 		print(cHue)
+		#31ea4e
 
 	# while music is playing
 	else:
@@ -176,18 +179,22 @@ while True:
 
 		# on even numbers, first lifx is light on
 		if countBeat % 2 == 0:
-			lazylights.set_state([bulbs_by_name['LIFX 246D45']], cReg.hue * 360, cReg.saturation, 0.3, KELVIN, 0, False)
+			lazylights.set_state(bulbs, cReg.hue * 360, cReg.saturation, 1, KELVIN, 0, False)
 		# on odd numbers it is the other one
 		else:
 			cReg = c
 			redReg = red #save each previous color
 			blueReg = blue
 			greenReg = green
-			lazylights.set_state([bulbs_by_name['LIFX 31ea4e']], c.hue * 360, c.saturation, 0.3, KELVIN, 0, False)
+			lazylights.set_state(bulbs, c.hue * 360, c.saturation, 1, KELVIN, 0, False)
 	# lazylights.set_state(bulbs,c.hue*360,(2+c.saturation)/3,1,KELVIN,(DURATION),False)#c.luminance
 
 
 
+#Thread.thread_stop
+#except keyboardInterupt
+#destroy()
+#def destroy():
 
 
 
