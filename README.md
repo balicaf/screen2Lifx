@@ -4,10 +4,10 @@ Originally reproduce your screen mean color onto your LIFX bulb.
 Demo: [THIS!](https://youtu.be/WHCtUvEJXq0)
 *original code from lifxscreen is https://github.com/frakman1/lifxscreen2*)
 
-With this version, LIFX is synced with iTune's BPMs (obtained thanks to Mixxx app)
-Thanks to an update, now if you open Shazam on your mac (and thanks to spotify);
-This software detect BPMs with your microphone!!!!
-Use the branch firstTodo to use it with two lifx bulbs!!!!
+With this version, LIFX is synced with iTune's BPMs (obtained thanks to Mixxx app).<br />
+Thanks to an update, now if you open Shazam on your mac (and thanks to spotify);<br />
+This software detect BPMs with your microphone!!!!<br />
+Use the branch firstTodo to use it with two lifx bulbs!!!!<br />
 Tested on a MacOs 10.13.4. and 10.11.6 Python version 2.7.14
 
 ##Prerequisites:
