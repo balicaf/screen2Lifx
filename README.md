@@ -23,9 +23,9 @@ on terminal:<br />
 pip install git+https://github.com/mpapi/lazylights@2.0<br />
 pip install colour<br />
 pip install (drag&drop downloaded wheel into your terminal to obtain the path)<br />
-pip install requests
-pip install spotipy
-pip install six
+pip install requests<br />
+pip install spotipy<br />
+pip install six<br />
 
 export SPOTIPY_CLIENT_ID='your ID'
 export SPOTIPY_CLIENT_SECRET='your password'
